@@ -13,11 +13,15 @@ import jwt  # PyJWT
 import os
 
 from models import UserRegister, UserLogin, TodoBase, TodoUpdate, TodoResponse
+from app.core.config import Settings
 
 app = FastAPI()
 
+settings = Settings()
+
+
 # MongoDB Setup
-client = AsyncIOMotorClient("mongodb://localhost:27017")
+client = AsyncIOMotorClient(settings.mongodb_uri)
 db = client.todo_db
 todo_collection = db.todos
 user_collection = db.users
@@ -26,9 +30,9 @@ user_collection = db.users
 redis_client = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
 # JWT Setup
-JWT_SECRET = os.getenv("JWT_SECRET", "mysecret")  # You can store this securely
+JWT_SECRET = settings.jwt_secret_key
 JWT_ALGORITHM = "HS256"
-JWT_EXP_DELTA_MINUTES = 60
+JWT_EXP_DELTA_MINUTES = settings.access_token_expire_minutes
 
 #  Helpers 
 
